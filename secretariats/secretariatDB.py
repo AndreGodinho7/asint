@@ -28,13 +28,13 @@ class SecretariatDB:
     def create(self, location, name, description, opening_hours):
         new_id = str(len(self.secretariats)) #TODO: change id cretion
         self.secretariats[new_id] = Secretariat(new_id, location, name, description, opening_hours)
-        self.__dump()
+        self.dump()
         return self.secretariats[new_id]
 
     def remove(self, id):
         try:
             del self.secretariats[id]
-            self.__dump()
+            self.dump()
             return True
         except:
             return False
