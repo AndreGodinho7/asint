@@ -1,5 +1,33 @@
 import pickle
+from flask import Flask
+from flask import request
+from flask import abort
+from flask import jsonify
+import json
+import requests
 from room import Room
+
+URI_room = "https://fenix.tecnico.ulisboa.pt/api/fenix/v1/spaces/"
+
+def get_json(URI):
+    r = requests.get(URI)
+    node = r.json()
+    return node
+
+def get_building(node):
+    """
+    Gets the building of the room by recursively accessing parents info 
+    """
+    if node["parentSpace"]["type"] == 'BUILDING':
+        return node["parentSpace"]["name"]
+
+    else:
+        id_parent = node["parentSpace"]["id"]
+        URI = URI_room + id_parent
+        node = get_json(URI)
+        building = get_building(node)
+
+    return building
 
 class RoomDB:
     def __init__(self, name_room):
@@ -22,9 +50,29 @@ class RoomDB:
         try:
             return self.rooms[r_id]
         
-        except KeyError:
-            return None
-    
+        except KeyError:            
+            URI = URI_room + r_id 
+            room = get_json(URI)
+            
+            if "error" in room.keys():
+                if room["error"] == "id not found":
+                    return None
+                                
+            building = get_building(room)
+                
+            if not room["events"]: # if wrong identifier is inserted
+                timetable = None
+            else: 
+                timetable = room["events"]
+
+            room = self.createRoom(room["name"],
+                                    room["id"],
+                                    room["topLevelSpace"]["name"],
+                                    building,
+                                    timetable)
+
+            return room
+
     def listAllRooms(self):
         return list(self.rooms.values())
 
