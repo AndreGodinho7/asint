@@ -9,6 +9,9 @@ class ServerErrorException(Exception):
 class ValidationErrorException(Exception):
     pass
 
+class NotFoundErrorException(Exception):
+    pass
+
 class Microservices:
     def __init__(self):
         with open(SERVICE_CONFIGURATION, 'r') as file:
