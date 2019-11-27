@@ -31,4 +31,6 @@ class Microservices:
             return None
         
         return response.json()
-
+    
+    def serviceGet(self, service, identifier = ""):
+        return requests.get(f"http://{self.services[service]}/{identifier}")
