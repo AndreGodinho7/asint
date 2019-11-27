@@ -1,6 +1,6 @@
 class Room:
     def __init__(self, r_id, r_name, campus, building, timetable):
-        self.id = r_id
+        self.id = int(r_id)
         self.room_name = r_name
         self.campus= campus 
         self.building = building
