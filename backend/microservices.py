@@ -32,18 +32,21 @@ class Microservices:
             return None
         
         return response.json()
+
+    def getURL(self, service, identifier = ""):
+        return f"http://{self.services[service]}/{identifier}"
     
     def serviceGet(self, service, identifier = ""):
-        return requests.get(f"http://{self.services[service]}/{identifier}")
+        return requests.get(self.getURL(service, identifier))
     
     def servicePost(self, service, data, identifier = ""):
-        return requests.post(f"http://{self.services[service]}/{identifier}", json = data)
+        return requests.post(self.getURL(service, identifier), json = data)
     
     def servicePut(self, service, data, identifier = ""):
-        return requests.put(f"http://{self.services[service]}/{identifier}", json = data)
+        return requests.put(self.getURL(service, identifier), json = data)
 
     def serviceDelete(self, service, identifier = ""):
-        return requests.delete(f"http://{self.services[service]}/{identifier}")
+        return requests.delete(self.getURL(service, identifier))
     
     def listSecretariats(self):
         return self.validateAndParseResponse(self.serviceGet(SECRETARIATS_SERVICE))
