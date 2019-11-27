@@ -34,3 +34,6 @@ class Microservices:
     
     def serviceGet(self, service, identifier = ""):
         return requests.get(f"http://{self.services[service]}/{identifier}")
+
+    def valroomGet(self, identifier):
+        return self.validateAndParseResponse(self.serviceGet("rooms", identifier))
