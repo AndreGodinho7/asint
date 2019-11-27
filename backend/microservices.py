@@ -2,6 +2,7 @@ import json
 import requests
 
 SECRETARIATS_SERVICE = "secretariats"
+ROOMS_SERVICE = "rooms"
 SERVICE_CONFIGURATION = "services.json"
 
 class ServerErrorException(Exception):
@@ -62,3 +63,6 @@ class Microservices:
 
     def deleteSecretariat(self, identifier):
         return self.validateAndParseResponse(self.serviceDelete(SECRETARIATS_SERVICE, identifier))
+
+    def getRoom(self, identifier):
+        return self.validateAndParseResponse(self.serviceGet(ROOMS_SERVICE, identifier))
