@@ -9,8 +9,6 @@ import roomDB
 app = Flask(__name__)
 db = roomDB.RoomDB("IST Rooms")
 
-URI_room = "https://fenix.tecnico.ulisboa.pt/api/fenix/v1/spaces/"
-
 def notFound():
     resp = jsonify(error = "Room, not found.")
     resp.status_code = 404
