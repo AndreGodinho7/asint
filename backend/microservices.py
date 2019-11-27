@@ -16,10 +16,19 @@ class Microservices:
     def __init__(self):
         with open(SERVICE_CONFIGURATION, 'r') as file:
             self.services = json.load(file)
-    def listSecretariats(self):
-        response = requests.get(f"http://{self.services['secretariats']}/")
 
-        if response.status_code != 200:
+    def validateAndParseResponse(self, response):
+        if response.status_code == 404:
+            raise NotFoundErrorException()
+        
+        if response.status_code == 422:
+            raise ValidationErrorException()
+            
+        if int(response.status_code / 100) != 2:
+            raise ServerErrorException()
+
+        if response.status_code == 204:
             return None
-
+        
         return response.json()
+
