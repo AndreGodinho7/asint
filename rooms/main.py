@@ -14,7 +14,7 @@ def notFound():
     resp.status_code = 404
     return resp
 
-@app.route("/showRooms/", methods = ["GET"])
+@app.route("/", methods = ["GET"])
 def listRooms():
     roomsDict = list(map(lambda r: r.__dict__, db.listAllRooms()))
     resp = jsonify(roomsDict)
@@ -22,7 +22,7 @@ def listRooms():
     
     return resp
 
-@app.route('/getRoom/<identifier>', methods=['GET'])
+@app.route('/<identifier>', methods=['GET'])
 def getRoom(identifier):
     r_id = str(identifier)
 
