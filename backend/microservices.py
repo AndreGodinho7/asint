@@ -1,7 +1,7 @@
 import json
 import requests
 
-SERVICE_CONFIGURATION = "services.yaml"
+SERVICE_CONFIGURATION = "services.json"
 
 class ServerErrorException(Exception):
     pass
