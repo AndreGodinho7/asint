@@ -1,8 +1,8 @@
 import json
 import requests
 
-SERVICE_CONFIGURATION = "services.yaml"
 SECRETARIATS_SERVICE = "secretariats"
+SERVICE_CONFIGURATION = "services.json"
 
 class ServerErrorException(Exception):
     pass
