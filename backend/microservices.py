@@ -2,6 +2,7 @@ import json
 import requests
 
 SERVICE_CONFIGURATION = "services.yaml"
+SECRETARIATS_SERVICE = "secretariats"
 
 class ServerErrorException(Exception):
     pass
@@ -34,3 +35,27 @@ class Microservices:
     
     def serviceGet(self, service, identifier = ""):
         return requests.get(f"http://{self.services[service]}/{identifier}")
+    
+    def servicePost(self, service, data, identifier = ""):
+        return requests.post(f"http://{self.services[service]}/{identifier}", json = data)
+    
+    def servicePut(self, service, data, identifier = ""):
+        return requests.put(f"http://{self.services[service]}/{identifier}", json = data)
+
+    def serviceDelete(self, service, identifier = ""):
+        return requests.delete(f"http://{self.services[service]}/{identifier}")
+    
+    def listSecretariats(self):
+        return self.validateAndParseResponse(self.serviceGet(SECRETARIATS_SERVICE))
+       
+    def getSecretariat(self, identifier):
+        return self.validateAndParseResponse(self.serviceGet(SECRETARIATS_SERVICE, identifier))
+
+    def createSecretariat(self, secretariat):
+        return self.validateAndParseResponse(self.servicePost(SECRETARIATS_SERVICE, secretariat)) 
+    
+    def updateSecretariat(self, identifier, secretariat):
+        return self.validateAndParseResponse(self.servicePut(SECRETARIATS_SERVICE, secretariat, identifier))
+
+    def deleteSecretariat(self, identifier):
+        return self.validateAndParseResponse(self.serviceDelete(SECRETARIATS_SERVICE, identifier))
