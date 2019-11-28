@@ -1,0 +1,37 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>showRoom</title>
+</head>
+<body>
+    <h1> Room: {{ chosen_room.room_name }}</h1>
+
+    <form action="/mainPage">
+        <input type="submit" value = "Homepage"/>
+    </form>
+
+    <ul> 
+        <h2>Building: {{ chosen_room.building }}</h2>
+        <h2>Campus: {{ chosen_room.campus }}</h2>
+        <br />
+        <h2>Timetable</h2>
+
+        {% for item in all %}
+            <h3>Timeslot</h3>
+            <table>
+            {% for key, value in item.items() %}
+                <tr>
+                    <th> {{ key }} </th>
+                    <td> {{ value }} </td>
+                </tr>
+            {% endfor %}
+            </table>
+            <br />
+        {% endfor %}
+
+    </ul>
+
+</body>
+</html>
