@@ -54,23 +54,32 @@ class RoomDB:
             URI = URI_room + r_id 
             room = get_json(URI)
             
-            if "error" in room.keys():
+            if "error" in room.keys(): # if wrong identifier is inserted 
                 if room["error"] == "id not found":
                     return None
                                 
             building = get_building(room)
                 
-            if not room["events"]: # if wrong identifier is inserted
-                timetable = None
-            else: 
-                timetable = room["events"]
+            if not room['events']: # if events -> timetable is empty
+                timetable = []
 
+            else:
+                timetable = room['events']
+
+                for i in range(len(timetable)):
+                    if timetable[i]['type'] == "LESSON":
+                        for key, value in timetable[i]['course'].items():
+                            if key == 'name':
+                                key = 'title'
+                            timetable[i][key] = value
+                        
+                        del timetable[i]['course']
+                        
             room = self.createRoom(room["name"],
                                     room["id"],
                                     room["topLevelSpace"]["name"],
                                     building,
                                     timetable)
-
             return room
 
     def listAllRooms(self):
