@@ -7,7 +7,12 @@ import microservices
 
 app = Flask(__name__)
 
-api = microservices.Microservices()
+secretariats = microservices.Secretariats()
+
+def notFound(message):
+    resp = jsonify(error = message)
+    resp.status_code = 404
+    return resp
 
 @app.route("/")
 def mainPage():
@@ -28,6 +33,30 @@ def showRoom(identifier):
     
     else:
         return render_template("showRoom.html", chosen_room = room, all= room['timetable'])
+
+@app.route("/api/secretariats/", methods = ["GET"])
+def listSecretariats():
+    try:
+        secretariatsList = secretariats.listSecretariats()
+
+        resp = jsonify(secretariatsList)
+        resp.status_code = 200
+
+        return resp
+    except microservices.NotFoundErrorException:
+        return notFound("Oops, secretariat not found.")
+
+@app.route("/api/secretariats/<identifier>", methods = ["GET"])
+def getSecretariat(identifier):
+    try:
+        secretariat = secretariats.getSecretariat(identifier)
+
+        resp = jsonify(secretariat)
+        resp.status_code = 200
+
+        return resp
+    except microservices.NotFoundErrorException:
+        return notFound("Oops, secretariat not found.")
 
 if __name__ == '__main__':
     app.run(port=8089)
