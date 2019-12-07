@@ -5,6 +5,7 @@ from flask import jsonify
 import json
 import requests
 import roomDB
+import datetime
 
 app = Flask(__name__)
 db = roomDB.RoomDB("IST Rooms")
@@ -25,9 +26,10 @@ def listRooms():
 @app.route('/<identifier>', methods=['GET'])
 def getRoom(identifier):
     r_id = str(identifier)
+    now = datetime.datetime.now()
 
     try: 
-        room = db.showRoom(r_id).__dict__
+        room = db.showRoom(r_id, now).__dict__
         resp = jsonify(room)
         resp.statusCode = 200
     

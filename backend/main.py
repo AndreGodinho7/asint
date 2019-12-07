@@ -7,7 +7,7 @@ import microservices
 
 app = Flask(__name__)
 
-api = microservices.Microservices()
+rooms = microservices.Microservices()
 
 @app.route("/")
 def mainPage():
@@ -17,8 +17,13 @@ def mainPage():
 def showRoom(identifier):
     r_id = int(identifier)
 
+
+@app.route('/room/<identifier>', methods=['GET'])
+def apishowRoom(identifier):
+    r_id = int(identifier)
+
     try:
-        room = api.getRoom(r_id)
+        room = rooms.getRoom(r_id)
 
     except microservices.NotFoundErrorException:
         return render_template("errorPage.html", id = request.args["Id"])
