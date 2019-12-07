@@ -48,7 +48,12 @@ class Microservices:
 
     def serviceDelete(self, service, identifier = ""):
         return requests.delete(self.getURL(service, identifier))
-    
+
+class Rooms(Microservices):
+    def getRoom(self, identifier):
+        return self.validateAndParseResponse(self.serviceGet(ROOMS_SERVICE, identifier))
+
+class Secretariats(Microservices):
     def listSecretariats(self):
         return self.validateAndParseResponse(self.serviceGet(SECRETARIATS_SERVICE))
        
@@ -63,6 +68,3 @@ class Microservices:
 
     def deleteSecretariat(self, identifier):
         return self.validateAndParseResponse(self.serviceDelete(SECRETARIATS_SERVICE, identifier))
-
-    def getRoom(self, identifier):
-        return self.validateAndParseResponse(self.serviceGet(ROOMS_SERVICE, identifier))
