@@ -32,7 +32,7 @@ def apishowRoom(identifier):
         room = rooms.getRoom(r_id)
 
     except microservices.NotFoundErrorException:
-        return render_template("errorPage.html", id = request.args["Id"])
+        return render_template("errorPage.html", id = identifier)
 
     except microservices.ServerErrorException:
         return render_template("servererrorPage.html")
