@@ -8,6 +8,7 @@ import microservices
 app = Flask(__name__)
 
 secretariats = microservices.Secretariats()
+rooms = microservices.Rooms()
 
 def notFound(message):
     resp = jsonify(error = message)
