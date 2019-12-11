@@ -10,6 +10,9 @@ app = Flask(__name__)
 db = secretariatDB.SecretariatDB() 
 
 def validateCreateSecretariatRequest(createRequest):
+    if createRequest == None:
+        return False
+        
     keys = createRequest.keys()
     return "location" in keys and "name" in keys and "description" in keys and "opening_hours" in keys
 
