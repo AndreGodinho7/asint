@@ -33,21 +33,32 @@ def get_building(node):
 
     return building
 
+def get_todaytimetable(room, cur_time):
+    timetable = []
+    for slot in room.timetable:
+        data_time = datetime.datetime.strptime(slot['day'], '%d/%m/%Y')
+        if data_time.day == cur_time.day and data_time.month == cur_time.month:
+            timetable.append(slot)
+    return timetable
+
 class RoomDB:
-    def __init__(self, name_room):
-        self.name = name_room
+    dumpFile = "roomDump.db"
+    def __init__(self):
         try:
-            f = open('bd_dump'+name_room, 'rb')
+            f = open(self.dumpFile, 'rb')
             self.rooms = pickle.load(f)
             f.close()
         except IOError:
             self.rooms = {}
+
+    def dump(self):
+        f = open(self.dumpFile, 'wb')
+        pickle.dump(self.rooms, f)
+        f.close()
     
     def createRoom(self, name, r_id, campus, building, timetable, timer):
         self.rooms[r_id] = Room(r_id, name, campus, building, timetable, timer)
-        f = open('bd_dump' + self.name, 'wb')
-        pickle.dump(self.rooms, f)
-        f.close()
+        self.dump()
         return self.rooms[r_id]
 
     def showRoom(self, r_id, cur_time):
@@ -57,13 +68,7 @@ class RoomDB:
                 raise TimeOut
             
             room = self.rooms[r_id]
-
-            timetable = []
-            for slot in room.timetable:
-                data_time = datetime.datetime.strptime(slot['day'], '%d/%m/%Y')
-                if data_time.day == cur_time.day and data_time.month == cur_time.month:
-                    timetable.append(slot)    
-            room.timetable = timetable
+            room.timetable = get_todaytimetable(room, cur_time)
             return room
         
         except (KeyError, TimeOut):            
@@ -97,6 +102,8 @@ class RoomDB:
                                     building,
                                     timetable,
                                     cur_time + datetime.timedelta(hours=2))
+
+            room.timetable = get_todaytimetable(room, cur_time) 
             return room
 
     def listAllRooms(self):
