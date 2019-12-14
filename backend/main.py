@@ -4,11 +4,13 @@ from flask import render_template
 from flask import abort
 from flask import jsonify
 import microservices
+import extensibility as ext
 
 app = Flask(__name__)
 
 secretariats = microservices.Secretariats()
 rooms = microservices.Rooms()
+new_services = []
 
 def notFound(message):
     resp = jsonify(error = message)
@@ -19,8 +21,25 @@ def notFound(message):
 def mainPage():
     return "Hello world!"
 
+@app.route('/<microservice>/<path:path>', methods=['GET']) # TODO: discutir se é melhor assim ou só 
+def generalRoute(microservice, path):                      # com <microservice:microservice>
+    new_service = microservices.NewService()
+    
+    if microservice in new_service.services.keys():
+        new_services.append(new_service) # TODO: fará sentido ir guardado em lista? 
+
+        newmicro = new_service.getnewMicro()
+        html = ext.jsontoHTML(newmicro)
+        
+        htmlfile = ext.makeHTML("newmicro", ext.HTML_INIT+html+ext.HTML_FINAL)
+
+        return render_template(htmlfile)
+    
+    else:
+        return render_template("servererrorPage.html")
+
 @app.route('/api/room/<identifier>', methods=['GET'])
-def showRoom(identifier):
+def apishowRoom(identifier):
     r_id = int(identifier)
     try:
         room = rooms.getRoom(r_id)
@@ -30,10 +49,10 @@ def showRoom(identifier):
 
         return resp
     except microservices.NotFoundErrorException:
-        return notFound("Oops, secretariat not found.")
+        return notFound("Oops, room not found.")
 
 @app.route('/room/<identifier>', methods=['GET'])
-def apishowRoom(identifier):
+def showRoom(identifier):
     r_id = int(identifier)
 
     try:
