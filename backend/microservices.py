@@ -3,6 +3,7 @@ import requests
 
 SECRETARIATS_SERVICE = "secretariats"
 ROOMS_SERVICE = "rooms"
+NEW_SERVICE = "jnos"
 SERVICE_CONFIGURATION = "services.json"
 
 class ServerErrorException(Exception):
@@ -48,6 +49,10 @@ class Microservices:
 
     def serviceDelete(self, service, identifier = ""):
         return requests.delete(self.getURL(service, identifier))
+
+class NewService(Microservices):
+    def getnewMicro(self):
+        return self.validateAndParseResponse(self.serviceGet(NEW_SERVICE))
 
 class Rooms(Microservices):
     def getRoom(self, identifier):
