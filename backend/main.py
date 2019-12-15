@@ -10,6 +10,7 @@ app = Flask(__name__)
 
 secretariats = microservices.Secretariats()
 rooms = microservices.Rooms()
+admin = microservices.Admins()
 new_services = []
 
 def notFound(message):
@@ -114,6 +115,37 @@ def getSecretariat(identifier):
         return resp
     except microservices.NotFoundErrorException:
         return notFound("Oops, secretariat not found.")
+
+@app.route("/admin/logs", methods=["GET"])
+def listlogs():
+    try:
+        logList = admin.listlogs()
+        return render_template("listLogs.html", logs = logList)
+
+    except microservices.NotFoundErrorException:
+        return render_template("errorPage.html", id = request.args["Id"])
+
+    except microservices.ServerErrorException:
+        return render_template("servererrorPage.html")
+
+@app.route("/admin/createSecretariatForm")
+def createSecretariatForm():
+    return render_template("createSecretariatform.html")
+
+@app.route("/admin/createSecretariat", methods=["POST"])
+def createSecretariat():
+    location = request.form["Location"]
+    name = request.form["Name"]
+    description = request.form["Description"]
+    opening_hours = request.form["Opening"] 
+
+    secretariat = {"location":location, "name": name, "description": description, "opening_hours":opening_hours}
+    secretariat = admin.createSecretariat(secretariat)
+
+    return render_template("createdSecretariat.html", location=location, 
+                                                  name=name, 
+                                                  description=description, 
+                                                  opening_hours=opening_hours) 
 
 if __name__ == '__main__':
     app.run(port=8089)
