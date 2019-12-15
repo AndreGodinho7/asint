@@ -7,8 +7,11 @@ import requests
 import roomDB
 import datetime
 
+CREATELOG_URL = "http://127.0.0.1:8084/"
+ROOM_URL = "http://127.0.0.1:8082/"
+
 app = Flask(__name__)
-db = roomDB.RoomDB("IST Rooms")
+db = roomDB.RoomDB()
 
 def notFound():
     resp = jsonify(error = "Room, not found.")
@@ -36,7 +39,13 @@ def getRoom(identifier):
     except AttributeError: 
         resp = notFound()
 
+    clientname = None # TODO: define clientname
+    user = None # TODO: define user
+    data = {"accessedURL": ROOM_URL+identifier, "clientName": clientname, "user": user}
+    requests.post(CREATELOG_URL, json = data)
+
     return resp
+
 
 if __name__ == '__main__':
     app.run(port=8081)
