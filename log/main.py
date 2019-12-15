@@ -14,7 +14,7 @@ def validateCreateLogRequest(createRequest):
 
     #TODO: Validate datetime strings!
     keys = createRequest.keys()
-    return "accessedURL" in keys and "accessDate" in keys and "clientName" in keys
+    return "accessedURL" in keys and "clientName" in keys
 
 def validateEditLogRequest(editRequest):
     return validateCreateLogRequest(editRequest)
@@ -57,7 +57,6 @@ def createLog():
         user = request.json["user"]    
     
     log = db.create(request.json["accessedURL"],
-                            request.json["accessDate"],
                             request.json["clientName"],
                             user)
 
