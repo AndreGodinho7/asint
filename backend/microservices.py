@@ -3,6 +3,7 @@ import requests
 
 SECRETARIATS_SERVICE = "secretariats"
 ROOMS_SERVICE = "rooms"
+LOG = "log" 
 NEW_SERVICE = "jnos"
 SERVICE_CONFIGURATION = "services.json"
 
@@ -73,3 +74,7 @@ class Secretariats(Microservices):
 
     def deleteSecretariat(self, identifier):
         return self.validateAndParseResponse(self.serviceDelete(SECRETARIATS_SERVICE, identifier))
+
+class Admins(Secretariats):
+    def listlogs(self):
+        return self.validateAndParseResponse(self.serviceGet(LOG))
