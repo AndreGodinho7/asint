@@ -2,11 +2,10 @@ from datetime import datetime
 import pickle
 
 class Log:
-    def __init__(self, identifier, accessedURL, accessDate, clientName, user = None):
+    def __init__(self, identifier, accessedURL, clientName, user = None):
         self.identifier = identifier
         self.accessedURL = accessedURL
-        self.accessDate = accessDate
-        self.logDate = datetime.now().isoformat()
+        self.logDate = datetime.now().strftime("%d-%b-%Y (%H:%M:%S)")
         self.clientName = clientName
         self.user = user
 
@@ -34,9 +33,9 @@ class LogDB:
         except:
             return None
 
-    def create(self, accessedURL, accessDate, clientName, user = None):
+    def create(self, accessedURL, clientName, user = None):
         new_id = str(len(self.logs)) #TODO: change id cretion
-        self.logs[new_id] = Log(new_id, accessedURL, accessDate, clientName, user)
+        self.logs[new_id] = Log(new_id, accessedURL, clientName, user)
         self.dump()
         return self.logs[new_id]
 
