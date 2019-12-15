@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charslogListet="UTF-8">
+    <title>List of secretariats</title>
+    <style>
+        table {
+            border-collapse: collapse;
+            border: 1px black solid;
+        }
+
+        table > thead {
+            background-color: #dddddd;
+        }
+
+        th, td {
+            border: 1px gray solid;
+            padding: 4px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Logs</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>Accessed URL</th>
+                <th>Log date</th>
+                <th>Client name</th>
+                <th>User</th>
+            </tr>
+        </thead>
+        {% if logs|length > 0 %}
+        <tbody>
+            {% for log in logs %}
+                <tr>
+                    <td>{{ log.accessedURL}}</td>
+                    <td>{{ log.logDate}}</td>
+                    <td>{{ log.clientName}}</td>
+                    <td>{{ log.user}}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+        {% else %}
+    </table>
+            <p>There are no logs.</p>
+        {% endif %}
+</body>
+</html>
