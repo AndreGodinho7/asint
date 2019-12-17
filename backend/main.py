@@ -7,11 +7,15 @@ import microservices
 import extensibility as ext
 
 app = Flask(__name__)
+    
+URL_CANTEEN = "127.0.0.1:8080"
+URL_ROOMS = "127.0.0.1:8081"
+URL_SECRETARIATS = "127.0.0.1:8082"
+URL_LOGS = "127.0.0.1:8084"
 
-secretariats = microservices.Secretariats()
-rooms = microservices.Rooms()
-admin = microservices.Admins()
-new_services = []
+secretariats = microservices.Secretariats("secretariats", URL_SECRETARIATS)
+rooms = microservices.Rooms("rooms", URL_ROOMS)
+admin = microservices.Logs("logs", URL_LOGS)
 
 def notFound(message):
     resp = jsonify(error = message)
@@ -22,17 +26,16 @@ def notFound(message):
 def mainPage():
     return "Hello world!"
 
-@app.route('/<microservice>/<path:path>', methods=['GET']) # TODO: discutir se é melhor assim ou só 
-def generalRoute(microservice, path):                      # com <microservice:microservice>
-    new_service = microservices.NewService()
+@app.route("/<microservice>")
+@app.route('/<microservice>/<path:path>', methods=['GET'])  
+def generalRoute(microservice, path=""):                      
+    new_service = microservices.NewService(microservice, )
     
     if microservice in new_service.services.keys():
-        new_services.append(new_service) # TODO: fará sentido ir guardado em lista? 
-
         newmicro = new_service.getnewMicro()
         html = ext.jsontoHTML(newmicro)
         
-        htmlfile = ext.makeHTML("newmicro", ext.HTML_INIT+html+ext.HTML_FINAL)
+        htmlfile = ext.makeHTML("newmicro", html)
 
         return render_template(htmlfile)
     
@@ -178,6 +181,14 @@ def editSecretariat():
 
     return redirect(url_for('showSecretariat', identifier = request.form["id"]))
 
+
+
+@app.route("/admin/createSecretariatForm")
+def createSecretariatForm():
+    return render_template("createSecretariatform.html")
+
+@app.route("/admin/createMicroservice")
+def createMicroservice():
 
 
 if __name__ == '__main__':
