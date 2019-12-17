@@ -1,9 +1,10 @@
 import json
 import requests
+import pickle
 
 SECRETARIATS_SERVICE = "secretariats"
 ROOMS_SERVICE = "rooms"
-LOG = "log" 
+LOG = "logs" 
 NEW_SERVICE = "jnos"
 SERVICE_CONFIGURATION = "services.json"
 
@@ -17,9 +18,23 @@ class NotFoundErrorException(Exception):
     pass
 
 class Microservices:
-    def __init__(self):
-        with open(SERVICE_CONFIGURATION, 'r') as file:
-            self.services = json.load(file)
+    dumpFile = "URLDump.db"
+    def __init__(self, name, URL):
+        try:
+            f = open(self.dumpFile, 'rb')
+            self.services = pickle.load(f)
+            self.services[name] = URL
+            self.dump()
+
+        except IOError:
+            self.services = {}
+            self.services[name] = URL
+            self.dump()
+    
+    def dump(self):
+        f = open(self.dumpFile, 'wb')
+        pickle.dump(self.services, f)
+        f.close()
 
     def validateAndParseResponse(self, response):
         if response.status_code == 404:
@@ -75,6 +90,6 @@ class Secretariats(Microservices):
     def deleteSecretariat(self, identifier):
         return self.validateAndParseResponse(self.serviceDelete(SECRETARIATS_SERVICE, identifier))
 
-class Admins(Secretariats):
+class Logs(Microservices):
     def listlogs(self):
         return self.validateAndParseResponse(self.serviceGet(LOG))
