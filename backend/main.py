@@ -1,5 +1,5 @@
 from flask import Flask
-from flask import request
+from flask import request, redirect, url_for
 from flask import render_template
 from flask import abort
 from flask import jsonify
@@ -128,9 +128,20 @@ def listlogs():
     except microservices.ServerErrorException:
         return render_template("servererrorPage.html")
 
+@app.route("/admin/secretariat/<identifier>")
+def showSecretariat(identifier):
+    try:
+        secretariat = secretariats.getSecretariat(identifier)
+
+        return render_template("showSecretariat.html", secretariat = secretariat)
+    except microservices.NotFoundErrorException:
+        pass
+    except microservices.ServerErrorException:
+        pass
+
 @app.route("/admin/createSecretariatForm")
 def createSecretariatForm():
-    return render_template("createSecretariatform.html")
+    return render_template("createSecretariatForm.html")
 
 @app.route("/admin/createSecretariat", methods=["POST"])
 def createSecretariat():
@@ -145,7 +156,29 @@ def createSecretariat():
     return render_template("createdSecretariat.html", location=location, 
                                                   name=name, 
                                                   description=description, 
-                                                  opening_hours=opening_hours) 
+                                                  opening_hours=opening_hours)
+
+@app.route("/admin/editSecretariatForm/<identifier>")
+def editSecretariatForm(identifier):
+    try:
+        secretariat = secretariats.getSecretariat(identifier)
+
+        return render_template("editSecretariatForm.html", secretariat = secretariat)
+    except microservices.NotFoundErrorException:
+        return render_template("errorPage.html", id = identifier), 404
+    except microservices.ServerErrorException:
+        return render_template("servererrorPage.html"), 500
+
+@app.route("/admin/editSecretariat", methods = ["POST"])
+def editSecretariat():
+    if "id" not in request.form:
+        return render_template("errorPage.html", id = "null"), 400
+    
+    secretariats.updateSecretariat(request.form["id"], dict(request.form))
+
+    return redirect(url_for('showSecretariat', identifier = request.form["id"]))
+
+
 
 if __name__ == '__main__':
     app.run(port=8089)
