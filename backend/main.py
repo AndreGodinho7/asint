@@ -5,6 +5,7 @@ from flask import abort
 from flask import jsonify
 import microservices
 import extensibility as ext
+import authentication
 
 app = Flask(__name__)
     
@@ -27,6 +28,9 @@ def notFoundHTML(identifier):
 
 def serverErrorHTML():
     return render_template("servererrorPage.html"), 500
+
+def unauthorizedHTML():
+    return render_template("unauthorized.html"), 401
 
 @app.route("/")
 def mainPage():
@@ -136,16 +140,19 @@ def listlogs():
         return serverErrorHTML()
 
 @app.route("/admin/secretariats/create")
+@authentication.admin
 def createSecretariatForm():
     return render_template("createSecretariatform.html")
 
 @app.route("/admin/secretariats/create", methods=["POST"])
+@authentication.admin
 def createSecretariat():
     secretariat = secretariats.createSecretariat(dict(request.form))
 
     return redirect(url_for("getSecretariatPage", identifier = secretariat["id"]))
 
 @app.route("/admin/secretariats/<identifier>/edit")
+@authentication.admin
 def editSecretariatForm(identifier):
     try:
         secretariat = secretariats.getSecretariat(identifier)
@@ -157,6 +164,7 @@ def editSecretariatForm(identifier):
         return serverErrorHTML()
 
 @app.route("/admin/secretariats/<identifier>/edit", methods = ["POST"])
+@authentication.admin
 def editSecretariat(identifier):
     if "id" not in request.form:
         return render_template("errorPage.html", id = "null"), 400
@@ -166,6 +174,7 @@ def editSecretariat(identifier):
     return redirect(url_for('getSecretariatPage', identifier = identifier))
 
 @app.route("/admin/secretariats/<identifier>/delete")
+@authentication.admin
 def removeSecretariat(identifier):
     try:
         secretariats.deleteSecretariat(identifier)
