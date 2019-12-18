@@ -6,6 +6,7 @@ from flask import jsonify
 import requests
 import microservices
 import extensibility as ext
+import authentication
 
 app = Flask(__name__)
     
@@ -22,6 +23,15 @@ def notFound(message):
     resp = jsonify(error = message)
     resp.status_code = 404
     return resp
+
+def notFoundHTML(identifier):
+    return render_template("errorPage.html", id = identifier), 404
+
+def serverErrorHTML():
+    return render_template("servererrorPage.html"), 500
+
+def unauthorizedHTML():
+    return render_template("unauthorized.html"), 401
 
 @app.route("/")
 def mainPage():
@@ -61,14 +71,12 @@ def showRoom(identifier):
     try:
         room = rooms.getRoom(r_id)
 
+        return render_template("showRoom.html", chosen_room = room, all= room['timetable'])
     except microservices.NotFoundErrorException:
-         return render_template("errorPage.html", id = r_id)
+         return notFoundHTML(r_id)
 
     except microservices.ServerErrorException:
-        return render_template("servererrorPage.html")
-    
-    else:
-        return render_template("showRoom.html", chosen_room = room, all= room['timetable'])
+        return serverErrorHTML()
 
 @app.route("/secretariats/", methods = ["GET"])
 def listSecretariatsPage():
@@ -77,10 +85,10 @@ def listSecretariatsPage():
 
         return render_template("listSecretariats.html", secretariats = secretariatsList)
     except microservices.NotFoundErrorException:
-        return render_template("errorPage.html", id = request.args["Id"])
+        return notFoundHTML("")
 
     except microservices.ServerErrorException:
-        return render_template("servererrorPage.html")
+        return serverErrorHTML()
 
 @app.route("/secretariats/<identifier>", methods = ["GET"])
 def getSecretariatPage(identifier):
@@ -89,10 +97,10 @@ def getSecretariatPage(identifier):
 
         return render_template("showSecretariat.html", secretariat = secretariat)
     except microservices.NotFoundErrorException:
-        return render_template("errorPage.html", id = request.args["Id"])
+        return notFoundHTML(identifier)
 
     except microservices.ServerErrorException:
-        return render_template("servererrorPage.html")
+        return serverErrorHTML()
 
 @app.route("/api/secretariats/", methods = ["GET"])
 def listSecretariats():
@@ -125,60 +133,42 @@ def listlogs():
         return render_template("listLogs.html", logs = logList)
 
     except microservices.NotFoundErrorException:
-        return render_template("errorPage.html", id = request.args["Id"])
+        return notFoundHTML("")
 
     except microservices.ServerErrorException:
-        return render_template("servererrorPage.html")
+        return serverErrorHTML()
 
-@app.route("/admin/secretariat/<identifier>")
-def showSecretariat(identifier):
-    try:
-        secretariat = secretariats.getSecretariat(identifier)
-
-        return render_template("showSecretariat.html", secretariat = secretariat)
-    except microservices.NotFoundErrorException:
-        pass
-    except microservices.ServerErrorException:
-        pass
-
-@app.route("/admin/createSecretariatForm")
+@app.route("/admin/secretariats/create")
+@authentication.admin
 def createSecretariatForm():
-    return render_template("createSecretariatForm.html")
+    return render_template("createSecretariatform.html")
 
-@app.route("/admin/createSecretariat", methods=["POST"])
+@app.route("/admin/secretariats/create", methods=["POST"])
+@authentication.admin
 def createSecretariat():
-    location = request.form["Location"]
-    name = request.form["Name"]
-    description = request.form["Description"]
-    opening_hours = request.form["Opening"] 
+    secretariat = secretariats.createSecretariat(dict(request.form))
 
-    secretariat = {"location":location, "name": name, "description": description, "opening_hours":opening_hours}
-    secretariat = admin.createSecretariat(secretariat)
+    return redirect(url_for("getSecretariatPage", identifier = secretariat["id"]))
 
-    return render_template("createdSecretariat.html", location=location, 
-                                                  name=name, 
-                                                  description=description, 
-                                                  opening_hours=opening_hours)
-
-@app.route("/admin/editSecretariatForm/<identifier>")
+@app.route("/admin/secretariats/<identifier>/edit")
+@authentication.admin
 def editSecretariatForm(identifier):
     try:
         secretariat = secretariats.getSecretariat(identifier)
 
         return render_template("editSecretariatForm.html", secretariat = secretariat)
     except microservices.NotFoundErrorException:
-        return render_template("errorPage.html", id = identifier), 404
+        return notFoundHTML(identifier)
     except microservices.ServerErrorException:
-        return render_template("servererrorPage.html"), 500
+        return serverErrorHTML()
 
-@app.route("/admin/editSecretariat", methods = ["POST"])
-def editSecretariat():
+@app.route("/admin/secretariats/<identifier>/edit", methods = ["POST"])
+@authentication.admin
+def editSecretariat(identifier):
     if "id" not in request.form:
         return render_template("errorPage.html", id = "null"), 400
     
-    secretariats.updateSecretariat(request.form["id"], dict(request.form))
-
-    return redirect(url_for('showSecretariat', identifier = request.form["id"]))
+    secretariats.updateSecretariat(identifier, dict(request.form))
 
 @app.route("/admin/createMicroserviceForm")
 def createMicroserviceForm():
@@ -191,6 +181,23 @@ def createMicroservice():
     
     new_micro = microservices.Microservices(name, url)
     return render_template("createdMicroservice.html", name = name, URL = url)
+    return redirect(url_for('getSecretariatPage', identifier = identifier))
+
+@app.route("/admin/secretariats/<identifier>/delete")
+@authentication.admin
+def removeSecretariat(identifier):
+    try:
+        secretariats.deleteSecretariat(identifier)
+
+        return redirect(url_for("listSecretariatsPage"))
+    except microservices.NotFoundErrorException:
+        return notFoundHTML(identifier)
+    except microservices.ServerErrorException:
+        return serverErrorHTML()
+
+@app.route("/admin/createMicroservice")
+def createMicroservice():
+    pass
 
 if __name__ == '__main__':
     app.run(port=8089)
