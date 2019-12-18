@@ -32,7 +32,7 @@ def mainPage():
 def generalRoute(microservice, path=""):   
     micro = microservices.Microservices()
 
-    if microservice in micro.services.keys(): 
+    if microservice in micro.services.keys(): # TODO: asneira se meter mal o URL
         json = micro.validateAndParseResponse(micro.serviceGet(microservice))
         html = ext.jsontoHTML(json)
         htmlfile = ext.makeHTML("newmicro", html)                      
