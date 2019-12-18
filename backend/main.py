@@ -169,6 +169,7 @@ def editSecretariat(identifier):
         return render_template("errorPage.html", id = "null"), 400
     
     secretariats.updateSecretariat(identifier, dict(request.form))
+    return redirect(url_for('getSecretariatPage', identifier = identifier))
 
 @app.route("/admin/createMicroserviceForm")
 def createMicroserviceForm():
@@ -181,7 +182,6 @@ def createMicroservice():
     
     new_micro = microservices.Microservices(name, url)
     return render_template("createdMicroservice.html", name = name, URL = url)
-    return redirect(url_for('getSecretariatPage', identifier = identifier))
 
 @app.route("/admin/secretariats/<identifier>/delete")
 @authentication.admin
@@ -194,10 +194,6 @@ def removeSecretariat(identifier):
         return notFoundHTML(identifier)
     except microservices.ServerErrorException:
         return serverErrorHTML()
-
-@app.route("/admin/createMicroservice")
-def createMicroservice():
-    pass
 
 if __name__ == '__main__':
     app.run(port=8089)
