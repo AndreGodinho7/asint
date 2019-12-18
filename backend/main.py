@@ -3,6 +3,7 @@ from flask import request, redirect, url_for
 from flask import render_template
 from flask import abort
 from flask import jsonify
+import requests
 import microservices
 import extensibility as ext
 
@@ -28,17 +29,15 @@ def mainPage():
 
 @app.route("/<microservice>")
 @app.route('/<microservice>/<path:path>', methods=['GET'])  
-def generalRoute(microservice, path=""):                      
-    new_service = microservices.NewService(microservice, )
-    
-    if microservice in new_service.services.keys():
-        newmicro = new_service.getnewMicro()
-        html = ext.jsontoHTML(newmicro)
-        
-        htmlfile = ext.makeHTML("newmicro", html)
+def generalRoute(microservice, path=""):   
+    micro = microservices.Microservices()
 
+    if microservice in micro.services.keys(): 
+        json = micro.validateAndParseResponse(micro.serviceGet(microservice))
+        html = ext.jsontoHTML(json)
+        htmlfile = ext.makeHTML("newmicro", html)                      
         return render_template(htmlfile)
-    
+
     else:
         return render_template("servererrorPage.html")
 
@@ -181,15 +180,17 @@ def editSecretariat():
 
     return redirect(url_for('showSecretariat', identifier = request.form["id"]))
 
+@app.route("/admin/createMicroserviceForm")
+def createMicroserviceForm():
+    return render_template("createMicroserviceForm.html")
 
-
-@app.route("/admin/createSecretariatForm")
-def createSecretariatForm():
-    return render_template("createSecretariatform.html")
-
-@app.route("/admin/createMicroservice")
+@app.route("/admin/createMicroservice", methods=["POST"])
 def createMicroservice():
-
+    url = request.form["URL"]
+    name = request.form["Name"]
+    
+    new_micro = microservices.Microservices(name, url)
+    return render_template("createdMicroservice.html", name = name, URL = url)
 
 if __name__ == '__main__':
     app.run(port=8089)

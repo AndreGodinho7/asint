@@ -19,15 +19,16 @@ class NotFoundErrorException(Exception):
 
 class Microservices:
     dumpFile = "URLDump.db"
-    def __init__(self, name, URL):
+    services = {}
+    def __init__(self, name=None, URL=None):
         try:
             f = open(self.dumpFile, 'rb')
             self.services = pickle.load(f)
-            self.services[name] = URL
-            self.dump()
+            if name is not None:
+                self.services[name] = URL
+                self.dump()
 
         except IOError:
-            self.services = {}
             self.services[name] = URL
             self.dump()
     
@@ -35,6 +36,10 @@ class Microservices:
         f = open(self.dumpFile, 'wb')
         pickle.dump(self.services, f)
         f.close()
+
+    def update(self):
+        f = open(self.dumpFile, 'rb')
+        self.services = pickle.load(f)
 
     def validateAndParseResponse(self, response):
         if response.status_code == 404:
