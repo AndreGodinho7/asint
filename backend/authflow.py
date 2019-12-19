@@ -4,6 +4,7 @@ import authentication
 import secrets
 import string
 import requests
+from datetime import timedelta, datetime
 
 authflowBP = Blueprint("authflow", __name__, url_prefix="")
 
@@ -40,6 +41,9 @@ def userAuth():
         tokenResponse = response.json()
 
         token = tokenResponse["access_token"]
+        secondsUntilExpiration = int(tokenResponse["expires_in"])
+
+        expirationDate = datetime.today() + timedelta(seconds=secondsUntilExpiration)
 
         params = {'access_token': token}
         resp = requests.get("https://fenix.tecnico.ulisboa.pt/api/fenix/v1/person", params = params)
@@ -48,7 +52,7 @@ def userAuth():
 
         userId = userInformation["username"]
 
-        authentication.loginUser(userId, token)
+        authentication.loginUser(userId, token, expirationDate)
     else:
         return render_template("serverError.html"), 500
 
