@@ -1,5 +1,5 @@
 from flask import Flask
-from flask import request, redirect, url_for
+from flask import request, redirect, url_for, session
 from flask import render_template
 from flask import abort
 from flask import jsonify
@@ -10,6 +10,8 @@ import authentication
 
 app = Flask(__name__)
     
+app.secret_key = b'\x04`#\xec\xc2\xb1\x89.\xf3\x95\xf4\xe7x\xcaY\x0b'
+
 URL_CANTEEN = "127.0.0.1:8080"
 URL_ROOMS = "127.0.0.1:8081"
 URL_SECRETARIATS = "127.0.0.1:8082"
@@ -18,6 +20,13 @@ URL_LOGS = "127.0.0.1:8084"
 secretariats = microservices.Secretariats("secretariats", URL_SECRETARIATS)
 rooms = microservices.Rooms("rooms", URL_ROOMS)
 admin = microservices.Logs("logs", URL_LOGS)
+
+clientID = "1695915081465955"
+clientSecret = "82FMfVGZPyEcY8O1NfQaWYzhY7VQ2adz50QFeC0cxJRUAVLknHGGXhJZS9yOYOQo72YRJiOBRYLdKUcVAu3ZSQ=="
+redirectURI = "http://127.0.0.1:8089/userAuth"
+
+fenixLoginPage = f"https://fenix.tecnico.ulisboa.pt/oauth/userdialog?client_id={clientID}&redirect_uri={redirectURI}"
+fenixAccessTokenPage = "https://fenix.tecnico.ulisboa.pt/oauth/access_token"
 
 def notFound(message):
     resp = jsonify(error = message)
@@ -40,6 +49,51 @@ def mainPage():
 @app.route("/qrcode")
 def render():
     return render_template("qrcode.html")
+
+@app.route("/login")
+def login():
+    return redirect(fenixLoginPage)
+
+@app.route("/logout")
+def logout():
+    authentication.logoutUser()
+    return redirect("/")
+
+@app.route("/userAuth")
+def userAuth():
+    code = request.args['code']
+    print ("code "+request.args['code'])
+
+    payload = {'client_id': clientID,
+               'client_secret': clientSecret,
+               'redirect_uri' : redirectURI,
+               'code' : code,
+               'grant_type': 'authorization_code'}
+
+    response = requests.post(fenixAccessTokenPage, params = payload)
+
+    if response.status_code == 200:
+        tokenResponse = response.json()
+
+        token = tokenResponse["access_token"]
+
+        params = {'access_token': token}
+        resp = requests.get("https://fenix.tecnico.ulisboa.pt/api/fenix/v1/person", params = params)
+
+        userInformation = resp.json()
+
+        userId = userInformation["username"]
+
+        authentication.loginUser(userId, token)
+    else:
+        return render_template("serverError.html"), 500
+
+    return redirect(url_for("getToken"))
+
+@app.route("/token")
+@authentication.fenixAuth
+def getToken():
+    return authentication.getToken()
 
 @app.route("/<microservice>")
 @app.route('/<microservice>/<path:path>', methods=['GET'])  

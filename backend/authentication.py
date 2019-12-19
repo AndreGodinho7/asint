@@ -1,5 +1,7 @@
 from functools import wraps
-from flask import request, Response
+from flask import request, Response, session, redirect, url_for
+
+loggedUsers = {}
 
 def admin(f):
     @wraps(f)
@@ -11,3 +13,23 @@ def admin(f):
             return resp, 401
         return f(*args, **kwargs)
     return decorated
+
+def fenixAuth(f):
+    @wraps(f)
+    def decorated(*args,**kwargs):
+        if "userId" not in session.keys() or session['userId'] not in loggedUsers.keys():
+            return redirect(url_for("login"))
+
+        return f(*args, **kwargs)
+    return decorated
+
+def loginUser(userId, token):
+    loggedUsers[userId] = token
+    session["userId"] = userId
+
+def logoutUser():
+    del loggedUsers[session["userId"]]
+    del session["userId"]
+
+def getToken():
+    return loggedUsers[session["userId"]]
