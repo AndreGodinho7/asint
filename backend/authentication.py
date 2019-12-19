@@ -18,7 +18,7 @@ def fenixAuth(f):
     @wraps(f)
     def decorated(*args,**kwargs):
         if "userId" not in session.keys() or session['userId'] not in loggedUsers.keys():
-            return redirect(url_for("login"))
+            return redirect(url_for("authflow.login"))
 
         return f(*args, **kwargs)
     return decorated
