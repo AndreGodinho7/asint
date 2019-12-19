@@ -3,11 +3,21 @@ from flask import request
 from flask import abort
 from flask import jsonify
 from flask import make_response
-
+from functools import wraps
+import requests
 import secretariatDB
+
+LOG_URL = "http://127.0.0.1:8084/"
 
 app = Flask(__name__)
 db = secretariatDB.SecretariatDB() 
+
+def logAccess(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        requests.post(LOG_URL, json = {"accessedURL" : request.url, "clientName" : request.remote_addr})
+        return f(*args, **kwargs)
+    return decorated
 
 def validateCreateSecretariatRequest(createRequest):
     if createRequest == None:
@@ -26,6 +36,7 @@ def notFound():
 
 
 @app.route("/", methods = ["GET"])
+@logAccess
 def listSecretariats():
     secretariatsDict = list(map(lambda s: s.__dict__, db.getAll()))
     resp = jsonify(secretariatsDict)
@@ -34,6 +45,7 @@ def listSecretariats():
     return resp
 
 @app.route("/<identifier>", methods = ["GET"])
+@logAccess
 def getSecretariat(identifier):
     secretariat = db.get(identifier)
     
@@ -46,6 +58,7 @@ def getSecretariat(identifier):
     return resp
 
 @app.route("/", methods = ["POST"])
+@logAccess
 def createSecretariat():
     if not validateCreateSecretariatRequest(request.json):
         resp = jsonify(error = "Could not create a secretariat due to lack of information.")
@@ -63,6 +76,7 @@ def createSecretariat():
     return resp
 
 @app.route("/<identifier>", methods = ["PUT"])
+@logAccess
 def editSecretariat(identifier):
     secretariat = db.get(identifier)
 
@@ -87,6 +101,7 @@ def editSecretariat(identifier):
     return resp
 
 @app.route("/<identifier>", methods = ["DELETE"])
+@logAccess
 def deleteSecretariat(identifier):
     if db.remove(identifier):
         return make_response("", 204, { "Content-Type" : "application/json" })
