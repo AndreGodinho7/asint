@@ -7,6 +7,8 @@ import requests
 import microservices
 import extensibility as ext
 import authentication
+import secrets
+import string
 
 app = Flask(__name__)
     
@@ -21,12 +23,14 @@ secretariats = microservices.Secretariats("secretariats", URL_SECRETARIATS)
 rooms = microservices.Rooms("rooms", URL_ROOMS)
 admin = microservices.Logs("logs", URL_LOGS)
 
-clientID = "1695915081465955"
-clientSecret = "82FMfVGZPyEcY8O1NfQaWYzhY7VQ2adz50QFeC0cxJRUAVLknHGGXhJZS9yOYOQo72YRJiOBRYLdKUcVAu3ZSQ=="
-redirectURI = "http://127.0.0.1:8089/userAuth"
+clientID = "1695915081465956"
+clientSecret = "xqedTb5MkSWzIgdFokbiTHtHaJx8rUQgnM2XMMqW2f6TpTrlaknr2kfGV9YyB+Vnve56CTKayrwFbI+U4Sr/RQ=="
+redirectURI = "http://projetodojnos.com:8089/userAuth"
 
 fenixLoginPage = f"https://fenix.tecnico.ulisboa.pt/oauth/userdialog?client_id={clientID}&redirect_uri={redirectURI}"
 fenixAccessTokenPage = "https://fenix.tecnico.ulisboa.pt/oauth/access_token"
+
+secretsKeep = {}
 
 def notFound(message):
     resp = jsonify(error = message)
@@ -88,12 +92,38 @@ def userAuth():
     else:
         return render_template("serverError.html"), 500
 
-    return redirect(url_for("getToken"))
+    return redirect(url_for("getSecret"))
 
-@app.route("/token")
+@app.route("/secret")
 @authentication.fenixAuth
-def getToken():
-    return authentication.getToken()
+def getSecret():
+    loggedUserId = authentication.getUserId()
+
+    for secret, userId in secretsKeep.items():
+        if userId == loggedUserId:
+            return secret
+
+    newSecret = ''.join(secrets.choice(string.ascii_uppercase + string.digits) 
+                                                  for i in range(6))
+
+    secretsKeep[newSecret] = loggedUserId
+
+    return newSecret
+
+@app.route("/info/<secret>")
+@authentication.fenixAuth
+def getInfo(secret):
+    if secret not in secretsKeep.keys():
+        return notFoundHTML(secret)
+
+    otherUserId = secretsKeep[secret]
+
+    del secretsKeep[secret]
+
+    params = {'access_token': authentication.loggedUsers[otherUserId]}
+    resp = requests.get("https://fenix.tecnico.ulisboa.pt/api/fenix/v1/person", params = params) 
+
+    return resp.text
 
 @app.route("/<microservice>")
 @app.route('/<microservice>/<path:path>', methods=['GET'])  
@@ -254,4 +284,4 @@ def removeSecretariat(identifier):
         return serverErrorHTML()
 
 if __name__ == '__main__':
-    app.run(port=8089)
+    app.run(host="192.168.1.85", port=8089)

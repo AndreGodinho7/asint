@@ -31,5 +31,8 @@ def logoutUser():
     del loggedUsers[session["userId"]]
     del session["userId"]
 
+def getUserId():
+    return session["userId"]
+
 def getToken():
     return loggedUsers[session["userId"]]
