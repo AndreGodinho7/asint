@@ -4,12 +4,8 @@ import pickle
 
 SECRETARIATS_SERVICE = "secretariats"
 ROOMS_SERVICE = "rooms"
-<<<<<<< HEAD
 CANTEEN_SERVICE = "canteen"
-LOG = "log" 
-=======
 LOG = "logs" 
->>>>>>> c884b53ecd9c68373ad84a010cb7367a21ba2ae3
 NEW_SERVICE = "jnos"
 SERVICE_CONFIGURATION = "services.json"
 

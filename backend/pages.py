@@ -16,6 +16,7 @@ URL_LOGS = "127.0.0.1:8084"
 
 secretariats = microservices.Secretariats("secretariats", URL_SECRETARIATS)
 rooms = microservices.Rooms("rooms", URL_ROOMS)
+canteens = microservices.Canteens("canteen", URL_CANTEEN)
 admin = microservices.Logs("logs", URL_LOGS)
 
 @pagesBP.route("/<microservice>")
@@ -69,3 +70,34 @@ def getSecretariatPage(identifier):
 
     except microservices.ServerErrorException:
         return serverErrorHTML()
+
+@pagesBP.route('/canteen', methods=['GET'])
+def canteenlistall():
+
+    try:
+        canteen = canteens.apiListMenus()
+
+    except microservices.NotFoundErrorException:
+         return render_template("errorPage.html")
+
+    except microservices.ServerErrorException:
+        return render_template("servererrorPage.html")
+    
+    else:
+        return render_template("listalldays.html", chosen_day = canteen)
+
+@pagesBP.route('/canteen/<identifier>', methods=['GET'])
+def canteenShow(identifier):
+    c_id = int(identifier)
+
+    try:
+        canteen = canteens.getDay(c_id)
+
+    except microservices.NotFoundErrorException:
+         return render_template("errorPage.html", id = c_id)
+
+    except microservices.ServerErrorException:
+        return render_template("servererrorPage.html")
+    
+    else:
+        return render_template("listCanteen.html", chosen_day = canteen)
