@@ -19,7 +19,7 @@ class Secret:
 def generateNewSecret(userId):
     newSecret = ''.join(secrets.choice(string.ascii_uppercase + string.digits) 
                                                 for i in range(6))
-    secretsKeep[newSecret] = Secret(newSecret, userId, datetime.now() + timedelta(minutes=1))
+    secretsKeep[newSecret] = Secret(newSecret, userId, datetime.now() + timedelta(minutes=2))
 
     return newSecret
 
