@@ -3,6 +3,7 @@ import requests
 
 SECRETARIATS_SERVICE = "secretariats"
 ROOMS_SERVICE = "rooms"
+CANTEEN_SERVICE = "canteen"
 LOG = "log" 
 NEW_SERVICE = "jnos"
 SERVICE_CONFIGURATION = "services.json"
@@ -58,6 +59,13 @@ class NewService(Microservices):
 class Rooms(Microservices):
     def getRoom(self, identifier):
         return self.validateAndParseResponse(self.serviceGet(ROOMS_SERVICE, identifier))
+
+class Canteens(Microservices):
+    def getDay(self, identifier):
+        return self.validateAndParseResponse(self.serviceGet(CANTEEN_SERVICE, identifier))
+    
+    def apiListMenus(self):
+        return self.validateAndParseResponse(self.serviceGet(CANTEEN_SERVICE))
 
 class Secretariats(Microservices):
     def listSecretariats(self):

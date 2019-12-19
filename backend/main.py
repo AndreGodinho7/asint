@@ -6,10 +6,12 @@ from flask import jsonify
 import microservices
 import extensibility as ext
 
+
 app = Flask(__name__)
 
 secretariats = microservices.Secretariats()
 rooms = microservices.Rooms()
+canteens = microservices.Canteens()
 admin = microservices.Admins()
 new_services = []
 
@@ -67,6 +69,37 @@ def showRoom(identifier):
     
     else:
         return render_template("showRoom.html", chosen_room = room, all= room['timetable'])
+
+@app.route('/canteen', methods=['GET'])
+def canteenlistall():
+
+    try:
+        canteen = canteens.apiListMenus()
+
+    except microservices.NotFoundErrorException:
+         return render_template("errorPage.html")
+
+    except microservices.ServerErrorException:
+        return render_template("servererrorPage.html")
+    
+    else:
+        return render_template("listalldays.html", chosen_day = canteen)
+
+@app.route('/canteen/<identifier>', methods=['GET'])
+def canteenShow(identifier):
+    c_id = int(identifier)
+
+    try:
+        canteen = canteens.getDay(c_id)
+
+    except microservices.NotFoundErrorException:
+         return render_template("errorPage.html", id = c_id)
+
+    except microservices.ServerErrorException:
+        return render_template("servererrorPage.html")
+    
+    else:
+        return render_template("listCanteen.html", chosen_day = canteen)
 
 @app.route("/secretariats/", methods = ["GET"])
 def listSecretariatsPage():

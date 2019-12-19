@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+        <meta charset="UTF-8">
+        <title>Canteern</title>
+</head>
+<body>
+
+        {% for item2 in chosen_day %}
+
+            <h1> Day: {{item2.day}}</h1>  
+            
+            <ul style= "padding-left:0px;"> 
+                    <h2>Menu Almoço</h2>
+
+                        {% for item in item2.almoco %}
+                            
+                            <div> <h3 style="
+                                width: 50px;
+                                margin-right: 0px;
+                                display: initial;
+                                line-height: 1cm;
+                            "> Type: </h3> {{item.tipo  }}</div>
+
+                                <div> <h4 style="
+                                        width: 50px;
+                                        margin-right: 0px;
+                                        display: initial;
+                                        "> Menu: </h4> {{item.menu }}</div>
+            
+                                <div> <h4 style="
+                                        width: 50px;
+                                        margin-right: 0px;
+                                        display: initial;
+                                "> Name: </h4> {{item.name  }}</div>
+        
+                            
+                        {% endfor %}
+             
+                        <h2>Menu Jantar</h2>
+                            {% for item in item2.jantar %}
+                                    <div> <h3 style="
+                                    width: 50px;
+                                    margin-right: 0px;
+                                    display: initial;
+                                    line-height: 1cm;
+                                    "> Type: </h3> {{item.tipo  }}</div>
+
+                                    <div> <h4 style="
+                                    width: 50px;
+                                    margin-right: 0px;
+                                    display: initial;
+                                    "> Menu: </h4> {{item.menu }}</div>
+            
+                                    <div> <h4 style="
+                                            width: 50px;
+                                            margin-right: 0px;
+                                            display: initial;
+                                    "> Name: </h4> {{item.name  }}</div>
+                            {% endfor %}
+        {% endfor %}
+
+            </ul>
+</body>
+</html>
