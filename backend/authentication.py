@@ -25,10 +25,10 @@ def admin(f):
 def fenixAuth(f):
     @wraps(f)
     def decorated(*args,**kwargs):
-        if "userId" not in session.keys() or session['userId'] not in loggedUsers.keys():
+        if "userId" not in session.keys() or getUserId() not in loggedUsers.keys():
             return redirect(url_for("authflow.login"))
 
-        if datetime.today() > loggedUsers[session["userId"]].expires:
+        if datetime.today() > loggedUsers[getUserId()].expires:
             logoutUser()
             return redirect(url_for("authflow.login"))
 
@@ -40,11 +40,11 @@ def loginUser(userId, token, expires):
     session["userId"] = userId
 
 def logoutUser():
-    del loggedUsers[session["userId"]]
+    del loggedUsers[getUserId()]
     del session["userId"]
 
 def getUserId():
     return session["userId"]
 
 def getToken():
-    return loggedUsers[session["userId"]].token
+    return loggedUsers[getUserId()].token
