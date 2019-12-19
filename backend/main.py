@@ -37,6 +37,10 @@ def unauthorizedHTML():
 def mainPage():
     return "Hello world!"
 
+@app.route("/qrcode")
+def render():
+    return render_template("qrcode.html")
+
 @app.route("/<microservice>")
 @app.route('/<microservice>/<path:path>', methods=['GET'])  
 def generalRoute(microservice, path=""):   
