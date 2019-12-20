@@ -88,5 +88,3 @@ class canteenDB:
             self.time = now + datetime.timedelta(hours=2)
             self.days = {}
 
-
-                
