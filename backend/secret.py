@@ -30,8 +30,8 @@ secretsKeep = {}
 def getSecret():
     loggedUserId = authentication.getUserId()
 
-    for secret, userId in secretsKeep.items():
-        if userId == loggedUserId:
+    for secret, secretKept in secretsKeep.items():
+        if secretKept.userId == loggedUserId:
             return secret
 
     return generateNewSecret(loggedUserId)

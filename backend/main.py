@@ -6,9 +6,10 @@ from api import apiBP
 from secret import secretBP
 from pages import pagesBP
 from authflow import authflowBP
+from app import appBP
 
 app = Flask(__name__)
-    
+
 app.secret_key = b'\x04`#\xec\xc2\xb1\x89.\xf3\x95\xf4\xe7x\xcaY\x0b'
 
 @app.route("/")
@@ -24,6 +25,8 @@ app.register_blueprint(apiBP)
 app.register_blueprint(secretBP)
 app.register_blueprint(pagesBP)
 app.register_blueprint(authflowBP)
+app.register_blueprint(appBP)
+
 
 if __name__ == '__main__':
-    app.run(host="192.168.1.85", port=8089)
+    app.run(host="127.0.0.1", port=8089)
