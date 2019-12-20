@@ -6,15 +6,6 @@ from admin import secretariats, rooms, canteen
 
 apiBP = Blueprint("api", __name__, url_prefix="")
 
-@apiBP.route("/api/microservices", methods = ["GET"])
-def listMicroservices():
-    services = microservices.Microservices().services
-
-    resp = jsonify(services)
-    resp.status_code = 200
-    
-    return resp
-
 @apiBP.route("/api/secretariats/", methods = ["GET"])
 def listSecretariats():
     try:
@@ -50,4 +41,33 @@ def apishowRoom(identifier):
 
         return resp
     except microservices.NotFoundErrorException:
+<<<<<<< HEAD
         return notFound("Oops, room not found.")
+=======
+        return notFound("Oops, room not found.")
+
+@apiBP.route("/api/canteen/", methods = ["GET"])
+def apicanteenlistall():
+
+    try:
+        canteen = canteens.apiListMenus()
+        resp = jsonify(canteen)
+        resp.status_code = 200
+
+        return resp
+    except microservices.NotFoundErrorException:
+        return notFound("Oops, canteen not found.")
+
+@apiBP.route("/api/canteen/<identifier>", methods = ["GET"])
+def apicanteenShow(identifier):
+
+    c_id = int(identifier)
+    try:
+        canteen = canteens.getDay(c_id)
+        resp = jsonify(canteen)
+        resp.status_code = 200
+
+        return resp
+    except microservices.NotFoundErrorException:
+        return notFound("Oops, canteen not found.")
+>>>>>>> 26b050d884dab5990f85ea4cb7f2900626a168cc

@@ -59,4 +59,39 @@ def getSecretariatPage(identifier):
         return notFoundHTML(identifier)
 
     except microservices.ServerErrorException:
+<<<<<<< HEAD
         return serverErrorHTML()
+=======
+        return serverErrorHTML()
+
+@pagesBP.route('/canteen', methods=['GET'])
+def canteenlistall():
+
+    try:
+        canteen = canteens.apiListMenus()
+
+    except microservices.NotFoundErrorException:
+         return render_template("errorPage.html")
+
+    except microservices.ServerErrorException:
+        return render_template("servererrorPage.html")
+    
+    else:
+        return render_template("listalldays.html", chosen_day = canteen)
+
+@pagesBP.route('/canteen/<identifier>', methods=['GET'])
+def canteenShow(identifier):
+    c_id = int(identifier)
+
+    try:
+        canteen = canteens.getDay(c_id)
+
+    except microservices.NotFoundErrorException:
+         return render_template("errorPage.html", id = c_id)
+
+    except microservices.ServerErrorException:
+        return render_template("servererrorPage.html")
+    
+    else:
+        return render_template("listCanteen.html", chosen_day = canteen)
+>>>>>>> 26b050d884dab5990f85ea4cb7f2900626a168cc

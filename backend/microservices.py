@@ -5,7 +5,7 @@ import pickle
 SECRETARIATS_SERVICE = "secretariats"
 ROOMS_SERVICE = "rooms"
 CANTEEN_SERVICE = "canteen"
-LOG = "log" 
+LOG = "logs" 
 NEW_SERVICE = "jnos"
 SERVICE_CONFIGURATION = "services.json"
 
@@ -42,7 +42,6 @@ class Microservices:
                 self.dump()
 
         except IOError:
-            #self.services[name] = URL
             self.dump()
     
     def dump(self):
