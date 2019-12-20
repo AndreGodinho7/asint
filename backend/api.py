@@ -11,6 +11,7 @@ URL_LOGS = "127.0.0.1:8084"
 secretariats = microservices.Secretariats("secretariats", URL_SECRETARIATS)
 rooms = microservices.Rooms("rooms", URL_ROOMS)
 admin = microservices.Logs("logs", URL_LOGS)
+canteens = microservices.Canteens("canteen", URL_CANTEEN)
 
 apiBP = Blueprint("api", __name__, url_prefix="")
 
@@ -25,6 +26,7 @@ def listSecretariats():
         return resp
     except microservices.NotFoundErrorException:
         return notFound("Oops, secretariat not found.")
+
 
 @apiBP.route("/api/secretariats/<identifier>", methods = ["GET"])
 def getSecretariat(identifier):
@@ -50,3 +52,28 @@ def apishowRoom(identifier):
         return resp
     except microservices.NotFoundErrorException:
         return notFound("Oops, room not found.")
+
+@apiBP.route("/api/canteen/", methods = ["GET"])
+def apicanteenlistall():
+
+    try:
+        canteen = canteens.apiListMenus()
+        resp = jsonify(canteen)
+        resp.status_code = 200
+
+        return resp
+    except microservices.NotFoundErrorException:
+        return notFound("Oops, canteen not found.")
+
+@apiBP.route("/api/canteen/<identifier>", methods = ["GET"])
+def apicanteenShow(identifier):
+
+    c_id = int(identifier)
+    try:
+        canteen = canteens.getDay(c_id)
+        resp = jsonify(canteen)
+        resp.status_code = 200
+
+        return resp
+    except microservices.NotFoundErrorException:
+        return notFound("Oops, canteen not found.")
