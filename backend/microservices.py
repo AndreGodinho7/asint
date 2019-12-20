@@ -1,5 +1,6 @@
 import json
 import requests
+import pickle
 
 SECRETARIATS_SERVICE = "secretariats"
 ROOMS_SERVICE = "rooms"
@@ -7,6 +8,11 @@ CANTEEN_SERVICE = "canteen"
 LOG = "log" 
 NEW_SERVICE = "jnos"
 SERVICE_CONFIGURATION = "services.json"
+
+URL_CANTEEN = "127.0.0.1:8080"
+URL_ROOMS = "127.0.0.1:8081"
+URL_SECRETARIATS = "127.0.0.1:8082"
+URL_LOGS = "127.0.0.1:8084"
 
 class ServerErrorException(Exception):
     pass
@@ -18,9 +24,35 @@ class NotFoundErrorException(Exception):
     pass
 
 class Microservices:
-    def __init__(self):
-        with open(SERVICE_CONFIGURATION, 'r') as file:
-            self.services = json.load(file)
+    dumpFile = "URLDump.db"
+    services = {}
+    def __init__(self, name=None, URL=None):
+        try:
+            f = open(self.dumpFile, 'rb')
+            self.services = pickle.load(f)
+
+            if not self.services:
+                self.services[ROOMS_SERVICE] = URL_ROOMS
+                self.services[SECRETARIATS_SERVICE] = URL_SECRETARIATS
+                self.services[CANTEEN_SERVICE] = URL_CANTEEN
+                self.services[LOG] = URL_LOGS
+
+            if name is not None and URL is not None:
+                self.services[name] = URL
+                self.dump()
+
+        except IOError:
+            #self.services[name] = URL
+            self.dump()
+    
+    def dump(self):
+        f = open(self.dumpFile, 'wb')
+        pickle.dump(self.services, f)
+        f.close()
+
+    def update(self):
+        f = open(self.dumpFile, 'rb')
+        self.services = pickle.load(f)
 
     def validateAndParseResponse(self, response):
         if response.status_code == 404:
@@ -52,10 +84,6 @@ class Microservices:
     def serviceDelete(self, service, identifier = ""):
         return requests.delete(self.getURL(service, identifier))
 
-class NewService(Microservices):
-    def getnewMicro(self):
-        return self.validateAndParseResponse(self.serviceGet(NEW_SERVICE))
-
 class Rooms(Microservices):
     def getRoom(self, identifier):
         return self.validateAndParseResponse(self.serviceGet(ROOMS_SERVICE, identifier))
@@ -83,6 +111,6 @@ class Secretariats(Microservices):
     def deleteSecretariat(self, identifier):
         return self.validateAndParseResponse(self.serviceDelete(SECRETARIATS_SERVICE, identifier))
 
-class Admins(Secretariats):
+class Logs(Microservices):
     def listlogs(self):
         return self.validateAndParseResponse(self.serviceGet(LOG))
