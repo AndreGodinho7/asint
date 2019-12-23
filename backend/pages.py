@@ -30,7 +30,7 @@ def generalRoute(microservice, path=""):
     else:
         pass
 
-@pagesBP.route('/room/<identifier>', methods=['GET'])
+@pagesBP.route('/rooms/<identifier>', methods=['GET'])
 @logAccess
 def showRoom(identifier):
     r_id = int(identifier)

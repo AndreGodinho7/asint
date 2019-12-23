@@ -30,7 +30,7 @@ def getSecretariat(identifier):
     except microservices.NotFoundErrorException:
         return notFound("Oops, secretariat not found.")
 
-@apiBP.route('/api/room/<identifier>', methods=['GET'])
+@apiBP.route('/api/rooms/<identifier>', methods=['GET'])
 def apiShowRoom(identifier):
     r_id = int(identifier)
     try:
