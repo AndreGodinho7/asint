@@ -5,27 +5,27 @@ import secrets
 import string
 import requests
 import extensibility as ext
+from functools import wraps
 from pagesUtil import notFoundHTML, serverErrorHTML
+from admin import secretariats, rooms, canteens
 
+LOG_URL = "http://127.0.0.1:8084/"
 pagesBP = Blueprint("pages", __name__, url_prefix="")
 
-URL_CANTEEN = "127.0.0.1:8080"
-URL_ROOMS = "127.0.0.1:8081"
-URL_SECRETARIATS = "127.0.0.1:8082"
-URL_LOGS = "127.0.0.1:8084"
-
-secretariats = microservices.Secretariats("secretariats", URL_SECRETARIATS)
-rooms = microservices.Rooms("rooms", URL_ROOMS)
-canteens = microservices.Canteens("canteen", URL_CANTEEN)
-admin = microservices.Logs("logs", URL_LOGS)
+def logAccess(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        requests.post(LOG_URL, json = {"accessedURL" : request.url, "clientName" : request.remote_addr})
+        return f(*args, **kwargs)
+    return decorated
 
 @pagesBP.route("/<microservice>")
 @pagesBP.route('/<microservice>/<path:path>', methods=['GET'])  
+@logAccess
 def generalRoute(microservice, path=""):   
-    micro = microservices.Microservices()
-
-    if microservice in micro.services.keys(): # TODO: asneira se meter mal o URL
-        json = micro.validateAndParseResponse(micro.serviceGet(microservice))
+    newmicro = microservices.Microservices()
+    if microservice in newmicro.services.keys(): # TODO: asneira se meter mal o URL
+        json = newmicro.validateAndParseResponse(newmicro.serviceGet(microservice))
         html = ext.jsontoHTML(json)
         htmlfile = ext.makeHTML("newmicro", html)                      
         return render_template(htmlfile)
@@ -34,6 +34,7 @@ def generalRoute(microservice, path=""):
         return render_template("servererrorPage.html")
 
 @pagesBP.route('/room/<identifier>', methods=['GET'])
+@logAccess
 def showRoom(identifier):
     r_id = int(identifier)
 
@@ -48,6 +49,7 @@ def showRoom(identifier):
         return serverErrorHTML()
 
 @pagesBP.route("/secretariats/", methods = ["GET"])
+@logAccess
 def listSecretariatsPage():
     try:
         secretariatsList = secretariats.listSecretariats()
@@ -60,6 +62,7 @@ def listSecretariatsPage():
         return serverErrorHTML()
 
 @pagesBP.route("/secretariats/<identifier>", methods = ["GET"])
+@logAccess
 def getSecretariatPage(identifier):
     try:
         secretariat = secretariats.getSecretariat(identifier)
@@ -72,6 +75,7 @@ def getSecretariatPage(identifier):
         return serverErrorHTML()
 
 @pagesBP.route('/canteen', methods=['GET'])
+@logAccess
 def canteenlistall():
 
     try:
@@ -87,6 +91,7 @@ def canteenlistall():
         return render_template("listalldays.html", chosen_day = canteen)
 
 @pagesBP.route('/canteen/<identifier>', methods=['GET'])
+@logAccess
 def canteenShow(identifier):
     c_id = int(identifier)
 

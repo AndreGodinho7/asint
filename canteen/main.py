@@ -2,12 +2,22 @@ from flask import Flask
 from flask import request
 from flask import abort
 from flask import jsonify
+from flask import make_response
+from functools import wraps
 import requests
 import canteenDB
-import datetime
+
+LOG_URL = "http://127.0.0.1:8084/"
 
 app = Flask(__name__)
 canteen = canteenDB.canteenDB("canteen")
+
+def logAccess(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        requests.post(LOG_URL, json = {"accessedURL" : request.url, "clientName" : request.remote_addr})
+        return f(*args, **kwargs)
+    return decorated
 
 def getData(url):
     r = requests.get(url)
@@ -23,6 +33,7 @@ def notFound():
     return resp
 
 @app.route("/")
+@logAccess
 def apiListMenus(URL = "https://fenix.tecnico.ulisboa.pt/api/fenix/v1/canteen"):
     canteen.check_cache()
 
@@ -39,6 +50,7 @@ def apiListMenus(URL = "https://fenix.tecnico.ulisboa.pt/api/fenix/v1/canteen"):
     return resp
 
 @app.route('/<identifier>', methods=['GET'])
+@logAccess
 def getDay(identifier, URI = "https://fenix.tecnico.ulisboa.pt/api/fenix/v1/canteen"):  
     canteen.check_cache()
 

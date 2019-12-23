@@ -2,16 +2,7 @@ from flask import Blueprint, render_template, request, redirect, jsonify
 import microservices
 import authentication
 from pagesUtil import notFound
-
-URL_CANTEEN = "127.0.0.1:8080"
-URL_ROOMS = "127.0.0.1:8081"
-URL_SECRETARIATS = "127.0.0.1:8082"
-URL_LOGS = "127.0.0.1:8084"
-
-secretariats = microservices.Secretariats("secretariats", URL_SECRETARIATS)
-rooms = microservices.Rooms("rooms", URL_ROOMS)
-admin = microservices.Logs("logs", URL_LOGS)
-canteens = microservices.Canteens("canteen", URL_CANTEEN)
+from admin import secretariats, rooms, canteen
 
 apiBP = Blueprint("api", __name__, url_prefix="")
 
@@ -26,7 +17,6 @@ def listSecretariats():
         return resp
     except microservices.NotFoundErrorException:
         return notFound("Oops, secretariat not found.")
-
 
 @apiBP.route("/api/secretariats/<identifier>", methods = ["GET"])
 def getSecretariat(identifier):
@@ -51,6 +41,9 @@ def apishowRoom(identifier):
 
         return resp
     except microservices.NotFoundErrorException:
+<<<<<<< HEAD
+        return notFound("Oops, room not found.")
+=======
         return notFound("Oops, room not found.")
 
 @apiBP.route("/api/canteen/", methods = ["GET"])
@@ -77,3 +70,4 @@ def apicanteenShow(identifier):
         return resp
     except microservices.NotFoundErrorException:
         return notFound("Oops, canteen not found.")
+>>>>>>> 26b050d884dab5990f85ea4cb7f2900626a168cc

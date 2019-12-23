@@ -5,9 +5,8 @@ from datetime import datetime
 class Principal:
     def __init__(self, userId, token, expires):
         self.userId = userId
-        self.token = token
+        self.token = token  
         self.expires = expires
-        
 
 loggedUsers = {}
 

@@ -1,18 +1,16 @@
 from flask import Blueprint, render_template, request, url_for, redirect
 import microservices
 import authentication
+import requests
+from functools import wraps
 
-URL_CANTEEN = "127.0.0.1:8080"
-URL_ROOMS = "127.0.0.1:8081"
-URL_SECRETARIATS = "127.0.0.1:8082"
-URL_LOGS = "127.0.0.1:8084"
+secretariats = microservices.Secretariats()
+rooms = microservices.Rooms()
+canteens = microservices.Canteens()
+admin = microservices.Logs()
 
-secretariats = microservices.Secretariats("secretariats", URL_SECRETARIATS)
-rooms = microservices.Rooms("rooms", URL_ROOMS)
-admin = microservices.Logs("logs", URL_LOGS)
-
+LOG_URL = "http://127.0.0.1:8084/"
 adminBP = Blueprint("admin", __name__, url_prefix="")
-
 
 def notFoundHTML(identifier):
     return render_template("errorPage.html", id = identifier), 404
@@ -23,7 +21,15 @@ def serverErrorHTML():
 def unauthorizedHTML():
     return render_template("unauthorized.html"), 401
 
+def logAccess(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        requests.post(LOG_URL, json = {"accessedURL" : request.url, "clientName" : request.remote_addr})
+        return f(*args, **kwargs)
+    return decorated
+
 @adminBP.route("/admin/logs", methods=["GET"])
+@logAccess
 def listlogs():
     try:
         logList = admin.listlogs()
@@ -37,11 +43,13 @@ def listlogs():
 
 @adminBP.route("/admin/secretariats/create")
 @authentication.admin
+@logAccess
 def createSecretariatForm():
     return render_template("createSecretariatform.html")
 
 @adminBP.route("/admin/secretariats/create", methods=["POST"])
 @authentication.admin
+@logAccess
 def createSecretariat():
     secretariat = secretariats.createSecretariat(dict(request.form))
 
@@ -49,6 +57,7 @@ def createSecretariat():
 
 @adminBP.route("/admin/secretariats/<identifier>/edit")
 @authentication.admin
+@logAccess
 def editSecretariatForm(identifier):
     try:
         secretariat = secretariats.getSecretariat(identifier)
@@ -61,6 +70,7 @@ def editSecretariatForm(identifier):
 
 @adminBP.route("/admin/secretariats/<identifier>/edit", methods = ["POST"])
 @authentication.admin
+@logAccess
 def editSecretariat(identifier):
     if "id" not in request.form:
         return render_template("errorPage.html", id = "null"), 400
@@ -69,10 +79,12 @@ def editSecretariat(identifier):
     return redirect(url_for('pages.getSecretariatPage', identifier = identifier))
 
 @adminBP.route("/admin/createMicroserviceForm")
+@logAccess
 def createMicroserviceForm():
     return render_template("createMicroserviceForm.html")
 
 @adminBP.route("/admin/createMicroservice", methods=["POST"])
+@logAccess
 def createMicroservice():
     url = request.form["URL"]
     name = request.form["Name"]
@@ -82,6 +94,7 @@ def createMicroservice():
 
 @adminBP.route("/admin/secretariats/<identifier>/delete")
 @authentication.admin
+@logAccess
 def removeSecretariat(identifier):
     try:
         secretariats.deleteSecretariat(identifier)
