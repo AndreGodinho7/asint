@@ -8,9 +8,9 @@ from datetime import timedelta, datetime
 
 authflowBP = Blueprint("authflow", __name__, url_prefix="")
 
-clientID = "1695915081465956"
-clientSecret = "xqedTb5MkSWzIgdFokbiTHtHaJx8rUQgnM2XMMqW2f6TpTrlaknr2kfGV9YyB+Vnve56CTKayrwFbI+U4Sr/RQ=="
-redirectURI = "http://projetodojnos.com:8089/userAuth"
+clientID = "1695915081465955"
+clientSecret = "82FMfVGZPyEcY8O1NfQaWYzhY7VQ2adz50QFeC0cxJRUAVLknHGGXhJZS9yOYOQo72YRJiOBRYLdKUcVAu3ZSQ=="
+redirectURI = "http://127.0.0.1:8089/userAuth"
 
 fenixLoginPage = f"https://fenix.tecnico.ulisboa.pt/oauth/userdialog?client_id={clientID}&redirect_uri={redirectURI}"
 fenixAccessTokenPage = "https://fenix.tecnico.ulisboa.pt/oauth/access_token"
