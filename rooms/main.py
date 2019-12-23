@@ -23,7 +23,7 @@ def logAccess(f):
     return decorated
 
 def notFound():
-    resp = jsonify(error = "Room, not found.")
+    resp = jsonify(error = "Room not found.")
     resp.status_code = 404
     return resp
 

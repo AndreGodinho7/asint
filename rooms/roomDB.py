@@ -11,7 +11,7 @@ import datetime
 URI_room = "https://fenix.tecnico.ulisboa.pt/api/fenix/v1/spaces/"
 
 class TimeOut(Exception):
-        pass
+    pass
 
 def get_json(URI):
     r = requests.get(URI)
@@ -71,14 +71,14 @@ class RoomDB:
             room.timetable = get_todaytimetable(room, cur_time)
             return room
         
-        except (KeyError, TimeOut):            
+        except (KeyError, TimeOut):   
+       
             URI = URI_room + r_id 
             room = get_json(URI)
             
-            if "error" in room.keys(): # if wrong identifier is inserted 
-                if room["error"] == "id not found":
-                    return None
-                                
+            if ("error" in room.keys() and room["error"] == "id not found") or room["type"] != "ROOM":
+                return None
+
             building = get_building(room)
                 
             if not room['events']: # if events -> timetable is empty
