@@ -19,8 +19,8 @@ def generalRoute(microservice, path=""):
     try:
         json = newmicro.validateAndParseResponse(newmicro.serviceGet(microservice))
         html = ext.jsontoHTML(json)
-        htmlfile = ext.makeHTML("newmicro", html)                      
-        return render_template(htmlfile)
+        html = ext.addHeaders(html)                      
+        return html
 
     except KeyError:
         return notFoundHTML(microservice)
@@ -71,7 +71,7 @@ def getSecretariatPage(identifier):
     except microservices.ServerErrorException:
         return serverErrorHTML()
 
-@pagesBP.route('/canteen', methods=['GET'])
+@pagesBP.route('/canteen/', methods=['GET'])
 @logAccess
 def canteenlistall():
 

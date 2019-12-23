@@ -71,12 +71,14 @@ def editSecretariat(identifier):
     secretariats.updateSecretariat(identifier, dict(request.form))
     return redirect(url_for('pages.getSecretariatPage', identifier = identifier))
 
-@adminBP.route("/admin/createMicroserviceForm")
+@authentication.admin
+@adminBP.route("/admin/microservice/created")
 @logAccess
 def createMicroserviceForm():
     return render_template("createMicroserviceForm.html")
 
-@adminBP.route("/admin/createMicroservice", methods=["POST"])
+@authentication.admin
+@adminBP.route("/admin/microservice/create", methods=["POST"])
 @logAccess
 def createMicroservice():
     url = request.form["URL"]

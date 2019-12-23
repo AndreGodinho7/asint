@@ -33,7 +33,5 @@ def jsontoHTML(json, h=1):
     
     return html
 
-def makeHTML(namefile, strHTML):
-    with open("templates/{}.html".format(namefile), "w", encoding="utf-8") as f:
-        f.write(HTML_INIT + strHTML + HTML_FINAL)
-    return namefile+".html"
+def addHeaders(strHTML):
+    return HTML_INIT + strHTML + HTML_FINAL
