@@ -6,7 +6,7 @@ import string
 import requests
 import extensibility as ext
 from functools import wraps
-from util import notFoundHTML, serverErrorHTML, logAccess
+from util import notFoundHTML, serverErrorHTML, logAccess 
 from admin import secretariats, rooms, canteens
 
 pagesBP = Blueprint("pages", __name__, url_prefix="")
@@ -16,14 +16,19 @@ pagesBP = Blueprint("pages", __name__, url_prefix="")
 @logAccess
 def generalRoute(microservice, path=""):   
     newmicro = microservices.Microservices()
-    if microservice in newmicro.services.keys(): # TODO: asneira se meter mal o URL
+    try:
         json = newmicro.validateAndParseResponse(newmicro.serviceGet(microservice))
         html = ext.jsontoHTML(json)
         htmlfile = ext.makeHTML("newmicro", html)                      
         return render_template(htmlfile)
 
+    except KeyError:
+        return notFoundHTML(microservice)
+
+    except microservices.ServerErrorException:
+        return serverErrorHTML()
     else:
-        return render_template("servererrorPage.html")
+        pass
 
 @pagesBP.route('/room/<identifier>', methods=['GET'])
 @logAccess
