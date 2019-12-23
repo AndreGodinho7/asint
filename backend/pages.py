@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, redirect, jsonify
+from flask import Blueprint, render_template, request, redirect, jsonify, session
 import microservices
 import authentication
 import secrets
@@ -6,18 +6,11 @@ import string
 import requests
 import extensibility as ext
 from functools import wraps
-from pagesUtil import notFoundHTML, serverErrorHTML
+from util import notFoundHTML, serverErrorHTML, logAccess
 from admin import secretariats, rooms, canteens
 
 LOG_URL = "http://127.0.0.1:8084/"
 pagesBP = Blueprint("pages", __name__, url_prefix="")
-
-def logAccess(f):
-    @wraps(f)
-    def decorated(*args, **kwargs):
-        requests.post(LOG_URL, json = {"accessedURL" : request.url, "clientName" : request.remote_addr})
-        return f(*args, **kwargs)
-    return decorated
 
 @pagesBP.route("/<microservice>")
 @pagesBP.route('/<microservice>/<path:path>', methods=['GET'])  
