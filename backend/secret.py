@@ -24,6 +24,7 @@ def generateNewSecret(userId):
     return newSecret
 
 secretsKeep = {}
+secretsUsed = {}
 
 @secretBP.route("/secret")
 @authentication.fenixAuth
@@ -35,6 +36,21 @@ def getSecret():
             return secret
 
     return generateNewSecret(loggedUserId)
+
+@secretBP.route("/secretUsed")
+@authentication.fenixAuth
+def secretUsed():
+    userId = authentication.getUserId()
+
+    if userId not in secretsUsed.keys():
+        return "", 404
+
+    otherUserId = secretsUsed[userId]
+    del secretsUsed[userId]
+    params = {'access_token': authentication.loggedUsers[otherUserId].token}
+    resp = requests.get("https://fenix.tecnico.ulisboa.pt/api/fenix/v1/person", params = params) 
+    
+    return resp.text
 
 @secretBP.route("/info/<secret>")
 @authentication.fenixAuth
@@ -50,6 +66,8 @@ def getInfo(secret):
 
     otherUserId = secretKept.userId
     params = {'access_token': authentication.loggedUsers[otherUserId].token}
-    resp = requests.get("https://fenix.tecnico.ulisboa.pt/api/fenix/v1/person", params = params) 
+    resp = requests.get("https://fenix.tecnico.ulisboa.pt/api/fenix/v1/person", params = params)
+
+    secretsUsed[otherUserId] = authentication.getUserId() 
 
     return resp.text

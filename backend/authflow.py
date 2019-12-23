@@ -56,4 +56,4 @@ def userAuth():
     else:
         return render_template("serverError.html"), 500
 
-    return redirect("/")
+    return redirect("/app")

@@ -25,13 +25,42 @@
     div {
         margin-bottom: 16px;
     }
+    div#codeScanner {
+        display: none;
+    }
+    div#content {
+        display: none;
+    }
+    div#secretForm {
+        display: none;
+    }
+    div#showSecret {
+        display: none;
+    }
 </style>
 <h1>App</h1>
-<div>
+<div id="menu">
+    <button id="qrButton">QR Code</button>
+    <button id="showSecretBtn">Show Secret</button>
+    <button id="enterSecret">Enter Secret</button>
+</div>
+<div id="codeScanner">
     <video muted playsinline id="qr-video"></video>
 </div>
-<div id="res">
+<div id="content">
 
+</div>
+<div id="userInfo">
+    <img id="userPhoto"><img><br />
+    <h3 id="userName"></h3><br />
+    <b id="mestrado"></b>
+</div>
+<div id="secretForm">
+        <input type="text" id="secretInput" placeholder="Secret (Shhh...)"/>
+        <button id="submitSecretBtn">Spy</button>
+</div>
+<div id="showSecret">
+    Your secret is: <span id="secretText"></span>
 </div>
 </body>
 </html>
