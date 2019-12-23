@@ -3,6 +3,7 @@ import microservices
 import authentication
 import requests
 from functools import wraps
+from util import logAccess
 
 secretariats = microservices.Secretariats()
 rooms = microservices.Rooms()
@@ -20,13 +21,6 @@ def serverErrorHTML():
 
 def unauthorizedHTML():
     return render_template("unauthorized.html"), 401
-
-def logAccess(f):
-    @wraps(f)
-    def decorated(*args, **kwargs):
-        requests.post(LOG_URL, json = {"accessedURL" : request.url, "clientName" : request.remote_addr})
-        return f(*args, **kwargs)
-    return decorated
 
 @adminBP.route("/admin/logs", methods=["GET"])
 @logAccess

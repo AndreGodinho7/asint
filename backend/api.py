@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, request, redirect, jsonify
 import microservices
 import authentication
-from pagesUtil import notFound
+from util import notFound
 from admin import secretariats, rooms, canteen
 
 apiBP = Blueprint("api", __name__, url_prefix="")
