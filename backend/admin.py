@@ -10,7 +10,6 @@ rooms = microservices.Rooms()
 canteens = microservices.Canteens()
 admin = microservices.Logs()
 
-LOG_URL = "http://127.0.0.1:8084/"
 adminBP = Blueprint("admin", __name__, url_prefix="")
 
 def notFoundHTML(identifier):

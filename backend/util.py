@@ -1,6 +1,6 @@
 from flask import render_template, jsonify, request, session
-import requests
 from functools import wraps
+import requests
 
 LOG_URL = "http://127.0.0.1:8084/"
 
