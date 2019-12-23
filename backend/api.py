@@ -2,7 +2,7 @@ from flask import Blueprint, render_template, request, redirect, jsonify
 import microservices
 import authentication
 from pagesUtil import notFound
-from admin import secretariats, rooms, canteen
+from admin import secretariats, rooms, canteens
 
 apiBP = Blueprint("api", __name__, url_prefix="")
 
@@ -41,9 +41,6 @@ def apishowRoom(identifier):
 
         return resp
     except microservices.NotFoundErrorException:
-<<<<<<< HEAD
-        return notFound("Oops, room not found.")
-=======
         return notFound("Oops, room not found.")
 
 @apiBP.route("/api/canteen/", methods = ["GET"])
@@ -70,4 +67,3 @@ def apicanteenShow(identifier):
         return resp
     except microservices.NotFoundErrorException:
         return notFound("Oops, canteen not found.")
->>>>>>> 26b050d884dab5990f85ea4cb7f2900626a168cc
