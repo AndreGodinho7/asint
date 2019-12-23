@@ -1,4 +1,8 @@
-from flask import render_template, jsonify
+from flask import render_template, jsonify, request, session
+from functools import wraps
+import requests
+
+LOG_URL = "http://127.0.0.1:8084/"
 
 def notFoundHTML(identifier):
     return render_template("errorPage.html", id = identifier), 404
