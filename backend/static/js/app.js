@@ -1,7 +1,7 @@
 import QrScanner from "/static/js/qr-scanner.min.js";
 QrScanner.WORKER_PATH = "/static/js/qr-scanner-worker.min.js";
 
-const apiDomain = "projetodojnos.com"
+const apiDomain = "127.0.0.1"
 const apiUrl = "http://" + apiDomain + ":8089/";
 
 var scanner;
