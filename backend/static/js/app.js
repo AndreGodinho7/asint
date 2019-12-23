@@ -1,7 +1,7 @@
 import QrScanner from "/static/js/qr-scanner.min.js";
 QrScanner.WORKER_PATH = "/static/js/qr-scanner-worker.min.js";
 
-const apiDomain = "projetodojnos.com"
+const apiDomain = "127.0.0.1"
 const apiUrl = "http://" + apiDomain + ":8089/";
 
 var scanner;
@@ -74,7 +74,7 @@ jQuery(document).ready(function () {
         const urlExpr = new RegExp("http:\/\/" + apiDomain + ":8089/([A-Za-z0-9]+)/([A-Za-z0-9]+)");
         var results = urlExpr.exec(result);
 
-        if (results.length == 3) {
+        if (results && results.length == 3) {
             var microservice = results[1];
             var identifier = results[2];
 
