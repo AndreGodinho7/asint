@@ -77,15 +77,15 @@ def canteenlistall():
 
     try:
         canteen = canteens.apiListMenus()
-
+        return render_template("listalldays.html", chosen_day = canteen)
+    
     except microservices.NotFoundErrorException:
-         return render_template("errorPage.html")
+        return notFoundHTML("")
 
     except microservices.ServerErrorException:
-        return render_template("servererrorPage.html")
-    
-    else:
-        return render_template("listalldays.html", chosen_day = canteen)
+        return serverErrorHTML()
+   
+       
 
 @pagesBP.route('/canteen/<identifier>', methods=['GET'])
 @logAccess
@@ -94,12 +94,13 @@ def canteenShow(identifier):
 
     try:
         canteen = canteens.getDay(c_id)
+        return render_template("listCanteen.html", chosen_day = canteen)
 
     except microservices.NotFoundErrorException:
-         return render_template("errorPage.html", id = c_id)
+         return notFoundHTML(c_id)
 
     except microservices.ServerErrorException:
-        return render_template("servererrorPage.html")
+        return serverErrorHTML()
     
     else:
-        return render_template("listCanteen.html", chosen_day = canteen)
+        pass
