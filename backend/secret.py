@@ -6,7 +6,7 @@ import string
 import requests
 from datetime import datetime, timedelta
 
-from pagesUtil import notFoundHTML
+from util import notFoundHTML
 
 secretBP = Blueprint("secret", __name__, url_prefix="")
 
