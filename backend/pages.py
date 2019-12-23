@@ -12,6 +12,8 @@ from admin import secretariats, rooms, canteens
 LOG_URL = "http://127.0.0.1:8084/"
 pagesBP = Blueprint("pages", __name__, url_prefix="")
 
+
+
 def logAccess(f):
     @wraps(f)
     def decorated(*args, **kwargs):
