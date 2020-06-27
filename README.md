@@ -4,7 +4,8 @@ that can be accesse by differente ways (mobile application, mobile phone, …).
 
 The objective of this work is to develop a systems the allows such interaction.
 
-In this work
+In this work:
+
 • Define the set of resources to be made available
 
 • Define the relevant information (attributes) of such resources
