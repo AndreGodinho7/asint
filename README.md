@@ -1,5 +1,5 @@
-# REST API with IST resources
-In this project it was developed a web application used to ease the access of Instituto superiror Técnico resources information, by means of web sirte, mobile applications or QR-Codes. In an organization such as IST lots of resources (buildings, rooms, services, people, canteen) have attributes information
+# REST API with Instituto Superior Técnico resources
+In this project it was developed a web application used to ease the access of Instituto Superior Técnico resources information, by means of web site, mobile applications or QR-Codes. In an organization such as IST lots of resources (buildings, rooms, services, people, canteen) have attributes information
 that can be accesse by differente ways (mobile application, mobile phone, …).
 
 The objective of this work is to develop a systems the allows such interaction.
